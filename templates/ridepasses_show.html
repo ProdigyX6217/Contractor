@@ -1,19 +1,19 @@
-<!-- templates/playlists_show.html -->
+<!-- templates/ridepasses_show.html -->
 {% extends 'base.html' %}
 
 {% block content %}
 <a href='/'>Back to Home</a>
 <div class='row'>
     <div class='col-sm-6 col-sm-offset-3'>
-        <h1>{{ playlist.title }}</h1>
-        <h2>{{ playlist.description }}</h2>
-        {% for video in playlist.videos %}
+        <h1>{{ ridepass.title }}</h1>
+        <h2>{{ ridepass.description }}</h2>
+        {% for video in ridepass.videos %}
             <div class="card"><div class="card-body">
                 <iframe width="420" height="315" src="{{ video }}"></iframe>
             </div></div>
         {% endfor %}
-        <p><a href='/playlists/{{ playlist._id }}/edit'>Edit</a></p>
-        <p><form method='POST' action='/playlists/{{ playlist._id }}/delete'>
+        <p><a href='/ridepasses/{{ ridepass._id }}/edit'>Edit</a></p>
+        <p><form method='POST' action='/ridepasses/{{ ridepass._id }}/delete'>
                 <input type='hidden' name='_method' value='DELETE'>
                 <button class='btn btn-primary' type='submit'>Delete</button>
             </form>

@@ -22,7 +22,7 @@ def ridepasses_new():
     """Create new ridepass."""
     return render_template('ridepasses_new.html', ridepass={}, title='New Ridepass')
 
-@app.route('/ridepass', methods=['POST'])
+@app.route('/ridepasses', methods=['POST'])
 def ridepasses_submit():
     """Submit a new ridepass."""
     ridepass = {
@@ -33,7 +33,7 @@ def ridepasses_submit():
     ridepass_id = ridepasses.insert_one(ridepass).inserted_id
     return redirect(url_for('ridepasses_show', ridepass_id=ridepass_id))
 
-@app.route('/ridepass/<ridepass_id>')
+@app.route('/ridepasses/<ridepass_id>')
 def ridepasses_show(ridepass_id):
     """Show a single ridepass."""
     ridepass = ridepasses.find_one({'_id': ObjectId(ridepass_id)})
@@ -47,15 +47,15 @@ def ridepasses_edit(ridepass_id):
     return render_template('ridepasses_edit.html', ridepass=ridepass, title='Edit Ridepass')
     # return f'My ID is {ridepass_id}'
 
-@app.route('/ridepasses', methods=['POST'])
-def ridepassess_update(ridepass_id):
+@app.route('/ridepasses/<ridepass_id>', methods=['POST'])
+def ridepasses_update(ridepass_id):
     """Submit an edited ridepass."""
     updated_ridepass = {
         'title': request.form.get('title'),
         'description': request.form.get('description'),
         'videos': request.form.get('videos').split()
     }
-    ridepassess.update_one(
+    ridepasses.update_one(
         {'_id': ObjectId(ridepass_id)},
         {'$set': updated_ridepass})
     return redirect(url_for('ridepasses_show', ridepass_id=ridepass_id))

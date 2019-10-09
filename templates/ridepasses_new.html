@@ -1,14 +1,14 @@
-<!-- templates/playlists_new.html -->
+<!-- templates/ridepasses_new.html -->
 {% extends 'base.html' %}
 
 {% block content %}
 <div class='row'>
     <div class='col-sm-6 col-sm-offset-3'>
-        <form method='POST' action='/playlists'>
-            {% include 'partials/playlists_form.html' %}
+        <form method='POST' action='/ridepasses'>
+            {% include 'partials/ridepass_form.html' %}
             <!-- BUTTON -->
             <div class='form-group'>
-                <button class='btn btn-primary' type='submit'>Save Playlist</button>
+                <button class='btn btn-primary' type='submit'>Save Ridepass</button>
             </div>
         </form>
     </div>

@@ -1,0 +1,13 @@
+<!-- templates/ridepasses_index.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Ridepasses</h1>
+
+<!-- <a href='/ridepasses/new'>New Ridepass</a> -->
+
+{% for ridepass in ridepasses %}
+    <h2><a href='/ridepasses/{{ ridepass._id }}'>{{ ridepass.title }}</a></h2>
+    <small>{{ ridepass.description }}</small>
+{% endfor %}
+{% endblock %}

@@ -1,22 +1,22 @@
-<!-- templates/playlists_index.html -->
+<!-- templates/ridepasses_index.html -->
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Playlists</h1>
+<h1>Ridepasses</h1>
 
 <div class='row'>
-    {% for playlist in playlists %}
+    {% for ridepass in ridepasses %}
         <div class='col-md-3'>
-            <h2><a href='/playlists/{{ playlist._id }}'>{{ playlist.title }}</a></h2>
-            <small>{{ playlist.description }}</small>
+            <h2><a href='/ridepasses/{{ ridepass._id }}'>{{ ridepass.title }}</a></h2>
+            <small>{{ ridepass.description }}</small>
         </div>
     {% endfor %}
 </div>
 {% endblock %}
 
-<!-- <a href='/playlists/new'>New Playlist</a>
-{% for playlist in playlists %}
-    <h2><a href='/playlists/{{ playlist._id }}'>{{ playlist.title }}</a></h2>
-    <small>{{ playlist.description }}</small>
+<!-- <a href='/ridepasses/new'>New Ridepass</a>
+{% for ridepass in ridepasses %}
+    <h2><a href='/ridepasses/{{ ridepass._id }}'>{{ ridepass.title }}</a></h2>
+    <small>{{ ridepass.description }}</small>
 {% endfor %}
 {% endblock %} -->

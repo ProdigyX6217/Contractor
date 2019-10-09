@@ -1,8 +1,8 @@
 from unittest import TestCase, main as unittest_main, mock
 from bson.objectid import ObjectId
 
-sample_playlist_id = ObjectId('5d55cffc4a3d4031f42827a3')
-sample_playlist = {
+sample_ridepass_id = ObjectId('5d55cffc4a3d4031f42827a3')
+sample_ridepass = {
     'title': 'Cat Videos',
     'description': 'Cats acting weird',
     'videos': [
@@ -12,12 +12,12 @@ sample_playlist = {
     ]
 }
 sample_form_data = {
-    'title': sample_playlist['title'],
-    'description': sample_playlist['description'],
-    'videos': '\n'.join(sample_playlist['videos'])
+    'title': sample_ridepass['title'],
+    'description': sample_ridepass['description'],
+    'videos': '\n'.join(sample_ridepass['videos'])
 }
 
-class PlaylistsTests(TestCase):
+class RidepassesTests(TestCase):
     """Flask tests."""
 
     def setUp(self):
@@ -30,62 +30,62 @@ class PlaylistsTests(TestCase):
         app.config['TESTING'] = True
 
     def test_index(self):
-        """Test the playlists homepage."""
+        """Test the ridepasses homepage."""
         result = self.client.get('/')
         self.assertEqual(result.status, '200 OK')
-        self.assertIn(b'Playlist', result.data)
+        self.assertIn(b'Ridepass', result.data)
 
     def test_new(self):
-        """Test the new playlist creation page."""
-        result = self.client.get('/playlists/new')
+        """Test the new ridepass creation page."""
+        result = self.client.get('/ridepasses/new')
         self.assertEqual(result.status, '200 OK')
-        self.assertIn(b'New Playlist', result.data)
+        self.assertIn(b'New Ridepass', result.data)
 
 
     @mock.patch('pymongo.collection.Collection.find_one')
     def test_show_playlist(self, mock_find):
-        """Test showing a single playlist."""
-        mock_find.return_value = sample_playlist
+        """Test showing a single ridepass."""
+        mock_find.return_value = sample_ridepass
 
-        result = self.client.get(f'/playlists/{sample_playlist_id}')
+        result = self.client.get(f'/ridepasses/{sample_ridepass_id}')
         self.assertEqual(result.status, '200 OK')
         self.assertIn(b'Cat Videos', result.data)
 
 
     @mock.patch('pymongo.collection.Collection.find_one')
-    def test_edit_playlist(self, mock_find):
-        """Test editing a single playlist."""
-        mock_find.return_value = sample_playlist
+    def test_edit_ridepass(self, mock_find):
+        """Test editing a single ridepass."""
+        mock_find.return_value = sample_ridepass
 
-        result = self.client.get(f'/playlists/{sample_playlist_id}/edit')
+        result = self.client.get(f'/ridepasses/{sample_ridepass_id}/edit')
         self.assertEqual(result.status, '200 OK')
         self.assertIn(b'Cat Videos', result.data)
 
 
     @mock.patch('pymongo.collection.Collection.insert_one')
-    def test_submit_playlist(self, mock_insert):
-        """Test submitting a new playlist."""
-        result = self.client.post('/playlists', data=sample_form_data)
+    def test_submit_ridepass(self, mock_insert):
+        """Test submitting a new ridepass."""
+        result = self.client.post('/ridepasses', data=sample_form_data)
 
-        # After submitting, should redirect to that playlist's page
+        # After submitting, should redirect to that ridepass's page
         self.assertEqual(result.status, '302 FOUND')
-        mock_insert.assert_called_with(sample_playlist)
+        mock_insert.assert_called_with(sample_ridepass)
 
 
     @mock.patch('pymongo.collection.Collection.update_one')
-    def test_update_playlist(self, mock_update):
-        result = self.client.post(f'/playlists/{sample_playlist_id}', data=sample_form_data)
+    def test_update_ridepass(self, mock_update):
+        result = self.client.post(f'/ridepasses/{sample_ridepass_id}', data=sample_form_data)
 
         self.assertEqual(result.status, '302 FOUND')
-        mock_update.assert_called_with({'_id': sample_playlist_id}, {'$set': sample_playlist})
+        mock_update.assert_called_with({'_id': sample_ridepass_id}, {'$set': sample_ridepass})
 
 
     @mock.patch('pymongo.collection.Collection.delete_one')
-    def test_delete_playlist(self, mock_delete):
+    def test_delete_ridepass(self, mock_delete):
         form_data = {'_method': 'DELETE'}
-        result = self.client.post(f'/playlists/{sample_playlist_id}/delete', data=form_data)
+        result = self.client.post(f'/ridepasses/{sample_ridepass_id}/delete', data=form_data)
         self.assertEqual(result.status, '302 FOUND')
-        mock_delete.assert_called_with({'_id': sample_playlist_id})
+        mock_delete.assert_called_with({'_id': sample_ridepass_id})
 
 
 if __name__ == '__main__':
