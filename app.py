@@ -3,87 +3,102 @@ from flask import Flask, render_template, request, redirect, url_for
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
-host = os.environ.get('MONGODB_URI', 'mongodb://localhost:27017/Contractor')
+host = os.environ.get('MONGODB_URI', 'mongodb://localhost:27017/Playlister')
 # host = MongoClient(host=f'{host}?retryWrites=false')
 client = MongoClient(host=f'{host}?retryWrites=false')
 db = client.get_default_database()
-ridepasses = db.ridepasses
+playlists = db.playlists
 comments = db.comments
 
+# client = MongoClient()
+# db = client.Playlister
+# playlists = db.playlists
 app = Flask(__name__)
 
+# @app.route('/')
+# def index():
+#     """Return homepage"""
+#     return render_template('home.html', msg='Flask is Cool!!')
+
+
+# OUR MOCK ARRAY OF PROJECTS
+# playlists = [
+#     { 'title': 'Dogs Videos', 'description': 'Dogs acting weird' },
+#     { 'title': '90\'s Music', 'description': 'I Get Around!' }
+# ]
+
 @app.route('/')
-def ridepasses_index():
-    """Show available ridepasses."""
-    return render_template('ridepasses_index.html', ridepasses=ridepasses.find())
+def playlists_index():
+    """Show all playlists."""
+    return render_template('playlists_index.html', playlists=playlists.find())
 
-@app.route('/ridepasses/new')
-def ridepasses_new():
-    """Create new ridepass."""
-    return render_template('ridepasses_new.html', ridepass={}, title='New Ridepass')
+@app.route('/playlists/new')
+def playlists_new():
+    """Create a new playlist."""
+    return render_template('playlists_new.html', playlist={}, title='New Playlist')
 
-@app.route('/ridepass', methods=['POST'])
-def ridepasses_submit():
-    """Submit a new ridepass."""
-    ridepass = {
+@app.route('/playlists', methods=['POST'])
+def playlists_submit():
+    """Submit a new playlist."""
+    playlist = {
         'title': request.form.get('title'),
         'description': request.form.get('description'),
         'videos': request.form.get('videos').split()
     }
-    ridepass_id = ridepasses.insert_one(ridepass).inserted_id
-    return redirect(url_for('ridepasses_show', ridepass_id=ridepass_id))
+    playlist_id = playlists.insert_one(playlist).inserted_id
+    return redirect(url_for('playlists_show', playlist_id=playlist_id))
 
-@app.route('/ridepass/<ridepass_id>')
-def ridepasses_show(ridepass_id):
-    """Show a single ridepass."""
-    ridepass = ridepasses.find_one({'_id': ObjectId(ridepass_id)})
-    ridepass_comments = comments.find({'ridepass_id': ObjectId(ridepass_id)})
-    return render_template('ridepasses_show.html', ridepass=ridepass, comments=ridepass_comments)
+@app.route('/playlists/<playlist_id>')
+def playlists_show(playlist_id):
+    """Show a single playlist."""
+    playlist = playlists.find_one({'_id': ObjectId(playlist_id)})
+    playlist_comments = comments.find({'playlist_id': ObjectId(playlist_id)})
+    return render_template('playlists_show.html', playlist=playlist, comments=playlist_comments)
 
-@app.route('/ridepasses/<ridepass_id>/edit')
-def ridepasses_edit(ridepass_id):
-    """Show the Edit form for a ridepass."""
-    ridepass = ridepasses.find_one({'_id': ObjectId(ridepass_id)})
-    return render_template('ridepasses_edit.html', ridepass=ridepass, title='Edit Ridepass')
+@app.route('/playlists/<playlist_id>/edit')
+def playlists_edit(playlist_id):
+    """Show the Edit form for a playlist."""
+    playlist = playlists.find_one({'_id': ObjectId(playlist_id)})
+    return render_template('playlists_edit.html', playlist=playlist, title='Edit Playlist')
     # return f'My ID is {playlist_id}'
 
-@app.route('/ridepasses', methods=['POST'])
-def ridepassess_update(ridepass_id):
-    """Submit an edited ridepass."""
-    updated_ridepass = {
+@app.route('/playlists', methods=['POST'])
+def playlists_update(playlist_id):
+    """Submit an edited playlist."""
+    updated_playlist = {
         'title': request.form.get('title'),
         'description': request.form.get('description'),
         'videos': request.form.get('videos').split()
     }
-    ridepassess.update_one(
-        {'_id': ObjectId(ridepass_id)},
-        {'$set': updated_ridepass})
-    return redirect(url_for('ridepasses_show', ridepass_id=ridepass_id))
+    playlists.update_one(
+        {'_id': ObjectId(playlist_id)},
+        {'$set': updated_playlist})
+    return redirect(url_for('playlists_show', playlist_id=playlist_id))
 
-@app.route('/ridepasses/<ridepass_id>/delete', methods=['POST'])
-def ridepasses_delete(ridepass_id):
-    """Delete One ridepass."""
-    ridepasses.delete_one({'_id': ObjectId(ridepass_id)})
-    return redirect(url_for('ridepasses_index'))
+@app.route('/playlists/<playlist_id>/delete', methods=['POST'])
+def playlists_delete(playlist_id):
+    """Delete One playlist."""
+    playlists.delete_one({'_id': ObjectId(playlist_id)})
+    return redirect(url_for('playlists_index'))
 
-@app.route('/ridepasses/comments', methods=['POST'])
+@app.route('/playlists/comments', methods=['POST'])
 def comments_new():
     """Submit a new comment."""
     comment = {
         'title': request.form.get('title'),
         'content': request.form.get('content'),
-        'ridepass_id': ObjectId(request.form.get('ridepass_id'))
+        'playlist_id': ObjectId(request.form.get('playlist_id'))
     }
     print(comment)
     comment_id = comments.insert_one(comment).inserted_id
-    return redirect(url_for('ridepasses_show', ridepass_id=request.form.get('ridepass_id')))
+    return redirect(url_for('playlists_show', playlist_id=request.form.get('playlist_id')))
 
-@app.route('/ridepasses/comments/<comment_id>', methods=['POST'])
+@app.route('/playlists/comments/<comment_id>', methods=['POST'])
 def comments_delete(comment_id):
     """Action to delete a comment."""
     comment = comments.find_one({'_id': ObjectId(comment_id)})
     comments.delete_one({'_id': ObjectId(comment_id)})
-    return redirect(url_for('ridepasses_show', ridepass_id=comment.get('ridepass_id')))
+    return redirect(url_for('playlists_show', playlist_id=comment.get('playlist_id')))
 
 
 if __name__ == '__main__':
